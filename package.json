@@ -1,0 +1,11 @@
+{
+  "name": "proyecto-api",
+  "version": "1.0.0",
+  "description": "Proyecto construcción de API con sequealize ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "juan correa",
+  "license": "MIT"
+}
