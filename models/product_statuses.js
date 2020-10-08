@@ -11,10 +11,6 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      user_roles.belongsTo(models.product_statuses, {
-        as:'product_statuses',
-        foreignKey: 'id'
-      });
     }
   };
   product_statuses.init({

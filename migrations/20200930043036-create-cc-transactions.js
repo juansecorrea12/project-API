@@ -12,7 +12,11 @@ module.exports = {
         type: Sequelize.STRING
       },
       order_id: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references:{
+          model:'sales_orders',
+          key:'id'
+        }
       },
       transdate:{
         type: Sequelize.DATE
