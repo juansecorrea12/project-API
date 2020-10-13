@@ -11,15 +11,17 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      product_tags.belongsToMany(models.products, {
-        as: 'products',
-        foreignKey: 'product_id'
+      products.belongsToMany(models.tags, {
+        as: 'tags',
+        foreignKey: 'id',
+        through: 'product_tags'
       });
-      product_categories.belongsToMany(models.products, {
-        as: 'products',
-        foreignKey: 'product_id'
+      products.belongsToMany(models.categories, {
+        as: 'categories',
+        foreignKey: 'id',
+        through: 'product_categories'
       });
-      product_status_id.hasMany(models.product_statuses, {
+      products.belongsTo(models.product_statuses, {
         as:'product_statuses',
         foreignKey: 'id'
       });
@@ -37,6 +39,8 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'products',
+    tableName: 'products',
+    underscored: true
   });
   return products;
 };

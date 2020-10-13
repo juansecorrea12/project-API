@@ -18,6 +18,8 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'sessions',
+    tableName: 'sessions',
+    underscored: true
   });
   return sessions;
 };

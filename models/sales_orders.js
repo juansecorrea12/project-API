@@ -12,17 +12,17 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      coupon_id.hasMany(models.coupons, {
+      sales_orders.belongsTo(models.coupons, {
         as:'coupons',
-        foreignKey: 'id'
+        foreignKey: 'coupon_id'
       });
-      session_id.hasMany(models.sessions, {
+      sales_orders.belongsTo(models.sessions, {
         as:'sessions',
-        foreignKey: 'id'
+        foreignKey: 'session_id'
       });
-      user_id.hasMany(models.users, {
+      sales_orders.belongsTo(models.users, {
         as:'users',
-        foreignKey: 'id'
+        foreignKey: 'user_id'
       });
     }
   };
@@ -35,6 +35,8 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'sales_orders',
+    tableName: 'sales_orders',
+    underscored: true
   });
   return sales_orders;
 };

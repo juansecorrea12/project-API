@@ -11,9 +11,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      user_roles.belongsToMany(models.users, {
-        as: 'roles',
-        foreignKey: 'roles_id'
+      roles.belongsToMany(models.users, {
+        as: 'users',
+        foreignKey: 'role_id',
+        through: 'user_roles'
     });
     }
   };
@@ -22,6 +23,8 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'roles',
+    tableName: 'roles',
+    underscored: true
   });
   return roles;
 };

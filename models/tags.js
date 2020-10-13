@@ -11,9 +11,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      product_tags.belongsToMany(models.tags, {
-        as: 'tags',
-        foreignKey: 'tag_id'
+      tags.belongsToMany(models.products, {
+        as: 'products',
+        foreignKey: 'tag_id',
+        through:'product_tags'
     });
     }
   };
@@ -22,6 +23,8 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'tags',
+    tableName: 'tags',
+    underscored: true
   });
   return tags;
 };

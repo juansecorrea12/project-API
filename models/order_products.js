@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      order_id.hasMany(models.sales_orders, {
+      order_products.hasMany(models.sales_orders, {
         as:'sales_orders',
         foreignKey: 'id'
       });
@@ -28,6 +28,8 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'order_products',
+    tableName: 'order_products',
+    underscored: true
   });
   return order_products;
 };
