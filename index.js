@@ -1,15 +1,18 @@
 const { users } = require('./models');
 const express = require('express');
+const bcrypt = require('bcryptjs');
 
 const app = express();
 
 // middlewares
+app.use(express.json());
+
 app.get('/', (req, res) => {
     res.send('hola mundo');
 })
 
 // Todas las operaciones que vienen de DB son asincronas
-app.get('/users', async (req, res) => {
+app.get('/api/v1/users', async (req, res) => {
     console.log(users);
     const Users = await users.findAll();
     res.json(
@@ -19,7 +22,7 @@ app.get('/users', async (req, res) => {
     );
 })
 
-app.get('/users/:id', async (req, res) => {
+app.get('/api/v1/users/:id', async (req, res) => {
     const userId = req.params.id;
     const Users = await users.findOne(
         {
@@ -33,6 +36,80 @@ app.get('/users/:id', async (req, res) => {
         }
     );
 })
+
+app.post('/api/v1/users', async (req, res) => {
+    let { first_name, last_name, email, active, token, password } = req.body;
+
+    // Encriptar la contraseña de los nuevos usuarios
+    const passwordEncrypted = bcrypt.hashSync(password, 10);
+    const user = await users.create(
+        {
+            first_name,
+            last_name,
+            email,
+            active,
+            token,
+            password: passwordEncrypted,
+            created_at: new Date(),
+            updated_at: new Date()
+        }
+    )
+    res.json(user);
+})
+
+app.put('/api/v1/users/:id', async (req, res) => {
+    let { first_name, last_name, email, active, token, password } = req.body;
+    const userId = req.params.id;
+    const user = await users.update(
+        {
+            first_name,
+            last_name,
+            email,
+            active,
+            token,
+            password,
+            updated_at: new Date()
+        },
+        {
+            returning: true,
+            where: { id: userId }
+        }
+    );
+    res.json(user);
+})
+
+app.delete('/api/v1/users/:id', async (req, res) => {
+    const userId = req.params.id;
+    const user = await users.destroy({ where: { id: userId } });
+    res.json({
+        message: "Se ha eliminado el registro correctamente",
+        user
+    });
+});
+
+app.post('/api/v1/users/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        let user = await users.findOne({ where: { email: email } });
+
+        // Comprobar que exista un usuario con el correo ingresado
+        if (user) {
+            // DesEncryptar la contraseña para comparar
+            bcrypt.compare(password, user.password, function (err, resp) {
+                if (err || resp === false) {
+                    res.status(401).json({ message: "Las credenciales no son correctas" });
+                } else {
+                    res.json({ message: "Las credenciales son correctas" });
+                }
+            });
+        }else{
+            res.status(401).json({message: "No existe ese usuario"});
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+});
 
 app.listen(8000, () => {
     console.log('Has iniciado el server en el puerto 8000');
