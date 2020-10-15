@@ -3,6 +3,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const validateToken = require('./middlewares/auth');
 const jwt = require('jsonwebtoken');
+const sendEmail = require('./middlewares/nodemailer');
 
 const app = express();
 
@@ -40,6 +41,15 @@ app.post('/api/v1/users/login', async (req, res) => {
         console.log(error);
     }
 });
+
+// Esta aqui para enviar el email sin necesidad de logearse,
+// por eso esta antes del validateToken
+app.post('/api/v1/send-email', (req, res) => {
+    sendEmail();
+    res.json({
+        message: "El correo se ha enviado satisfactoriamente"
+    })
+})
 
 app.use(validateToken);
 
@@ -122,6 +132,8 @@ app.delete('/api/v1/users/:id', async (req, res) => {
         user
     });
 });
+
+
 
 app.listen(8000, () => {
     console.log('Has iniciado el server en el puerto 8000');
