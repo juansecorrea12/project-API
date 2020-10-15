@@ -14,7 +14,8 @@ module.exports = (sequelize, DataTypes) => {
       users.belongsToMany(models.roles, {
         as: 'roles',
         foreignKey: 'user_id',
-        through: 'user_roles'
+        through: 'user_roles',
+        onDelete: 'cascade'
     });
     }
   };

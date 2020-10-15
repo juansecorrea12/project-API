@@ -1,11 +1,47 @@
 const { users } = require('./models');
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const validateToken = require('./middlewares/auth');
+const jwt = require('jsonwebtoken');
 
 const app = express();
 
 // middlewares
 app.use(express.json());
+
+app.post('/api/v1/users/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        let user = await users.findOne({ where: { email: email } });
+
+        // Comprobar que exista un usuario con el correo ingresado
+        if (user) {
+            // DesEncryptar la contraseña para comparar
+            bcrypt.compare(password, user.password, function (err, resp) {
+                if (err || resp === false) {
+                    res.status(401).json({ message: "Las credenciales no son correctas" });
+                } else {
+                    const token = jwt.sign({
+                        id: user.id,
+                        email: user.email,
+                        first_name: user.first_name,
+                        last_name: user.last_name
+                    },
+                        process.env.JWT_SECRET, { expiresIn: '3m' })
+                    res.cookie('access_token', token, {
+                        expires: new Date(Date.now() + 180000)
+                    }).json({ message: "Has iniciado sesión correctamente"});
+                }
+            });
+        } else {
+            res.status(401).json({ message: "No existe ese usuario" });
+        }
+    } catch (error) {
+        console.log(error);
+    }
+});
+
+app.use(validateToken);
 
 app.get('/', (req, res) => {
     res.send('hola mundo');
@@ -85,30 +121,6 @@ app.delete('/api/v1/users/:id', async (req, res) => {
         message: "Se ha eliminado el registro correctamente",
         user
     });
-});
-
-app.post('/api/v1/users/login', async (req, res) => {
-    try {
-        const { email, password } = req.body;
-        let user = await users.findOne({ where: { email: email } });
-
-        // Comprobar que exista un usuario con el correo ingresado
-        if (user) {
-            // DesEncryptar la contraseña para comparar
-            bcrypt.compare(password, user.password, function (err, resp) {
-                if (err || resp === false) {
-                    res.status(401).json({ message: "Las credenciales no son correctas" });
-                } else {
-                    res.json({ message: "Las credenciales son correctas" });
-                }
-            });
-        }else{
-            res.status(401).json({message: "No existe ese usuario"});
-        }
-    } catch (error) {
-        console.log(error);
-    }
-
 });
 
 app.listen(8000, () => {
