@@ -42,6 +42,10 @@ app.post('/api/v1/users/login', async (req, res) => {
     }
 });
 
+
+
+app.use(validateToken);
+
 // Esta aqui para enviar el email sin necesidad de logearse,
 // por eso esta antes del validateToken
 app.post('/api/v1/send-email', (req, res) => {
@@ -50,8 +54,6 @@ app.post('/api/v1/send-email', (req, res) => {
         message: "El correo se ha enviado satisfactoriamente"
     })
 })
-
-app.use(validateToken);
 
 app.get('/', (req, res) => {
     res.send('hola mundo');
